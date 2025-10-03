@@ -1,0 +1,36 @@
+{
+  "users": [
+    {
+      "id": "user_jatin_123",
+      "username": "jatin-prakash",
+      "fullName": "Jatin Prakash",
+      "email": "jatin@example.com",
+      "headline": "Full-Stack Developer & UI/UX Designer",
+      "bio": "Passionate developer with 5+ years of experience building scalable web applications. Love creating beautiful user experiences with modern technologies.",
+      "profilePictureUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face",
+      "portfolioDomain": "portfolio.jatinbuilds.com",
+      "adminDomain": "dashboard.jatinbuilds.com",
+      "socialLinks": {
+        "github": "https://github.com/jatinprakash",
+        "linkedin": "https://linkedin.com/in/jatinprakash",
+        "twitter": "https://twitter.com/jatinprakash"
+      }
+    },
+    {
+      "id": "user_himanshu_456",
+      "username": "himanshu-sharma",
+      "fullName": "Himanshu Sharma",
+      "email": "himanshu@example.com",
+      "headline": "Backend Developer & DevOps Engineer",
+      "bio": "Experienced backend developer specializing in microservices architecture and cloud infrastructure. Passionate about building robust and scalable systems.",
+      "profilePictureUrl": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face",
+      "portfolioDomain": "portfolio.himanshubuilds.com",
+      "adminDomain": "dashboard.himanshubuilds.com",
+      "socialLinks": {
+        "github": "https://github.com/himanshusharma",
+        "linkedin": "https://linkedin.com/in/himanshusharma",
+        "twitter": "https://twitter.com/himanshusharma"
+      }
+    }
+  ]
+}

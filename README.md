@@ -1,83 +1,125 @@
-# Dynamic Portfolio Platform - Next.js & Firebase
+# Trio Portfolio - Multi-Domain Architecture
 
-![Portfolio Platform Banner](https://placehold.co/1200x600/111827/7C3AED?text=Dynamic+Portfolio+Platform)
+A professional portfolio platform with multi-domain, single codebase architecture. This monorepo supports multiple users with their own custom domains for both portfolio and admin interfaces.
 
-Welcome to this dynamic portfolio platform, a modern and performant application designed to showcase projects and profiles. It is built with a server-first architecture using a cutting-edge tech stack, ensuring scalability, excellent SEO, and a professional-grade codebase.
+## Architecture Overview
 
-**Live Demo:** [portfolio.yourdomain.com](https://yourdomain.com) _(Replace with your actual URL after deployment)_
+This project follows a "franchise model" architecture where:
+- **One codebase** powers multiple branded domains
+- **Shared services** handle domain resolution and user data
+- **Separate apps** for portfolio (public) and admin (private) interfaces
+- **Domain-based routing** determines which user's data to display
 
----
+## Project Structure
 
-## ✨ Features
+```
+trio-portfolio/
+├── apps/
+│   ├── portfolio/          # Public portfolio app
+│   │   ├── src/
+│   │   │   ├── app/
+│   │   │   │   └── [domain]/    # Dynamic domain routing
+│   │   │   ├── components/
+│   │   │   └── middleware.ts    # Domain resolution middleware
+│   │   └── package.json
+│   └── admin/              # Admin dashboard app
+│       ├── src/
+│       │   ├── app/
+│       │   │   └── [domain]/    # Dynamic domain routing
+│       │   ├── components/
+│       │   └── middleware.ts    # Domain resolution middleware
+│       └── package.json
+├── packages/
+│   └── shared/             # Shared services and types
+│       ├── src/
+│       │   ├── services/   # Domain, user, project services
+│       │   ├── types/      # TypeScript definitions
+│       │   └── lib/        # Utilities and Firebase config
+│       └── package.json
+└── package.json            # Root workspace configuration
+```
 
-- **Dynamic Content:** All profile and project data is fetched from a backend, allowing for easy updates without code changes.
-- **Server-Side Rendering (SSR):** Pages are rendered on the server for blazing-fast load times and optimal SEO performance.
-- **Scalable Backend:** Built on Firebase Firestore, a serverless NoSQL database that is fast, flexible, and has a generous free tier.
-- **Modular & Type-Safe Codebase:** Follows a professional structure with a clear separation of concerns (services, validation, types) for maintainability.
+## Domain Configuration
 
----
+Each user in the Firestore database has:
+```typescript
+{
+  "userId": "user_abc_123",
+  "username": "jatin-prakash",
+  "fullName": "Jatin Prakash",
+  "portfolioDomain": "portfolio.jatinbuilds.com",
+  "adminDomain": "dashboard.jatinbuilds.com",
+  // ... other user fields
+}
+```
 
-## 🛠️ Tech Stack & Architecture
+## How It Works
 
-This project leverages Next.js as a full-stack framework, with its server-side capabilities securely communicating with the Firebase Firestore database.
+1. **Domain Resolution**: Middleware intercepts requests and extracts the domain
+2. **User Lookup**: Domain service queries Firestore to find the user
+3. **App Routing**: Routes to appropriate app (portfolio/admin) based on domain
+4. **Data Loading**: Pages load user-specific data based on resolved domain
 
-| Technology             | Role                                      |
-| :--------------------- | :---------------------------------------- |
-| **Next.js 14**         | Framework (App Router, Server Components) |
-| **React 18**           | UI Library                                |
-| **TypeScript**         | Language & Type Safety                    |
-| **Tailwind CSS**       | Styling                                   |
-| **Firebase Firestore** | Database (NoSQL)                          |
-| **Zod**                | Schema & Data Validation                  |
-| **Vercel**             | Deployment & Hosting                      |
-
----
-
-## 🚀 Getting Started
-
-Follow these instructions to get a copy of the project up and running on your local machine.
+## Development
 
 ### Prerequisites
+- Node.js 18+
+- Firebase project with Firestore
 
-- [Node.js](https://nodejs.org/) (v18.17.0 or later)
-- `npm` or `yarn`
+### Setup
+```bash
+# Install dependencies
+npm install
 
-### Installation & Setup
+# Build shared package
+npm run build:shared
 
-1.  **Clone the repository and install dependencies:**
+# Start development servers
+npm run dev
+```
 
-    ```bash
-    git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
-    cd your-repo-name
-    npm install
-    ```
+This will start:
+- Portfolio app on `http://localhost:3001`
+- Admin app on `http://localhost:3002`
 
-2.  **Set up your Firebase Project:**
-    - Go to the [Firebase Console](https://console.firebase.google.com/) and create a new project.
-    - In the project dashboard, enable **Firestore Database** (start in production mode).
-    - Go to **Project settings** -> **General** -> **Your apps**.
-    - Create a new **Web app (`</>`)** and copy the `firebaseConfig` object that is provided.
+### Environment Variables
+Create `.env.local` files in each app directory:
+```env
+NEXT_PUBLIC_ROOT_DOMAIN=jatinbuilds.com
+NEXT_PUBLIC_FIREBASE_CONFIG={"apiKey":"...","authDomain":"..."}
+```
 
-3.  **Configure Environment Variables:**
-    - In the root of your project, create a new file named `.env.local`.
-    - Stringify your `firebaseConfig` object and add it as the value for `NEXT_PUBLIC_FIREBASE_CONFIG`.
+## Deployment
 
-    **.env.local**
+### Vercel (Recommended)
+1. Deploy each app separately
+2. Configure custom domains in Vercel dashboard
+3. Set environment variables for each deployment
 
-    ```
-    # Stringified JSON of your Firebase config object
-    NEXT_PUBLIC_FIREBASE_CONFIG='{"apiKey":"...","authDomain":"...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}'
-    ```
+### Domain Configuration
+- Portfolio domains: `portfolio.username.com`
+- Admin domains: `dashboard.username.com`
+- Root domain: `username.com` (marketing page)
 
-4.  **Run the development server:**
-    ```bash
-    npm run dev
-    ```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
+- ✅ Multi-domain routing
+- ✅ User-specific data loading
+- ✅ Shared component library
+- ✅ TypeScript support
+- ✅ Tailwind CSS styling
+- ✅ Firebase integration
+- ✅ SEO optimization
+- ✅ Responsive design
 
----
+## Contributing
 
-## 📜 License
+1. Fork the repository
+2. Create a feature branch
+3. Make changes in the appropriate app/package
+4. Test with multiple domains
+5. Submit a pull request
 
-This project is licensed under the MIT License. See the `LICENSE.md` file for details.
+## License
+
+MIT License - see LICENSE file for details
