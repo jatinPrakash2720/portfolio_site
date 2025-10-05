@@ -3,14 +3,13 @@ import {
   getLeetCodeStats,
   getSolvedProblemsCount,
   getSolvedProblemsByDifficulty,
-} from '@/services/leetcodeService'
+} from "../../../../../packages/shared/src/services/leetcodeService"
 
 const LEETCODE_USERNAME = process.env.LEETCODE_USERNAME || 'sample-user'
 
 export async function GET() {
   try {
     const stats = await getLeetCodeStats()
-
     if (!stats) {
       // Return fallback data instead of error
       const demoData = {

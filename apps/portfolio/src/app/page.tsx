@@ -1,4 +1,6 @@
 import PortfolioPage from '../components/portfolio/PortfolioPage'
+import { domainService } from '../../../../packages/shared/src/services/domainService'
+import { notFound } from 'next/navigation'
 
 // Mock user data for development
 const mockUser = {
@@ -96,12 +98,57 @@ const mockUser = {
   updatedAt: new Date(),
 }
 
-export default function DevPortfolioPage() {
-  return <PortfolioPage user={mockUser} domain="localhost:3001" />
+export default async function RootPortfolioPage() {
+  // Get the host from headers (subdomain)
+  const host = process.env.VERCEL_URL || 'localhost:3001'
+
+  // Handle localhost for development
+  if (host.includes('localhost')) {
+    return <PortfolioPage user={mockUser} domain="localhost:3001" />
+  }
+
+  // For production subdomains
+  // const resolution = await domainService.resolveDomain(host)
+
+  // if (!resolution || resolution.appType !== 'portfolio') {
+  //   notFound()
+  // }
+
+  // return <PortfolioPage user={resolution.user} domain={host} />
 }
 
-export const metadata = {
-  title: 'John Doe - Portfolio',
-  description:
-    'Full-stack Developer & UI/UX Enthusiast - Portfolio showcasing projects and experience',
+export async function generateMetadata() {
+  const host = process.env.VERCEL_URL || 'localhost:3001'
+
+  // Handle localhost for development
+  if (host.includes('localhost')) {
+    return {
+      title: 'Portfolio Development - Localhost',
+      description: 'Development portfolio page',
+    }
+  }
+
+  // For production subdomains
+  const resolution = await domainService.resolveDomain(host)
+
+  if (!resolution || resolution.appType !== 'portfolio') {
+    return {
+      title: 'Portfolio Not Found',
+      description: 'The requested portfolio could not be found',
+    }
+  }
+
+  return {
+    title: `${resolution.user.fullName} - Portfolio`,
+    description:
+      resolution.user.bio || `${resolution.user.fullName}'s portfolio`,
+    openGraph: {
+      title: `${resolution.user.fullName} - Portfolio`,
+      description:
+        resolution.user.bio || `${resolution.user.fullName}'s portfolio`,
+      images: resolution.user.profilePictureUrl
+        ? [resolution.user.profilePictureUrl]
+        : [],
+    },
+  }
 }

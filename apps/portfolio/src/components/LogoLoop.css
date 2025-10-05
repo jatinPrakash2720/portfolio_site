@@ -118,6 +118,23 @@
   );
 }
 
+/* Flickering loading animation */
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+.logoloop__flicker {
+  animation: flicker 1.2s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .logoloop__track {
     transform: translate3d(0, 0, 0) !important;
@@ -126,5 +143,9 @@
   .logoloop__item img,
   .logoloop__node {
     transition: none !important;
+  }
+
+  .logoloop__flicker {
+    animation: none !important;
   }
 }

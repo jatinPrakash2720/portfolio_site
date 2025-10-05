@@ -4,12 +4,12 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const url = request.nextUrl
   const host = request.headers.get('host')
-  
+
   // Skip middleware for localhost development
   if (host?.includes('localhost')) {
     return NextResponse.next()
   }
-  
+
   // Root domain for marketing page (e.g., jatinbuilds.com)
   const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'localhost:3000'
 
@@ -18,11 +18,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/', url.origin))
   }
 
-  // For portfolio domains, rewrite to include domain in path
-  // e.g., 'portfolio.jatinbuilds.com/' becomes '/portfolio.jatinbuilds.com'
-  url.pathname = `/${host}${url.pathname}`
-  
-  return NextResponse.rewrite(url)
+  // For subdomain routing (portfolio.username.com)
+  // Let it pass through to root page for subdomain handling
+  return NextResponse.next()
 }
 
 export const config = {

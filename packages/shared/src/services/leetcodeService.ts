@@ -52,16 +52,12 @@ const leetcodeStatsSchema = z.object({
 
 export type LeetCodeStats = z.infer<typeof leetcodeStatsSchema>
 
-const LEETCODE_USERNAME = process.env.LEETCODE_USERNAME || 'sample-user'
-
-// --- API Fetching Functions ---
-
 /**
  * Fetches LeetCode user statistics using the LeetCode Query API
  */
 export async function getLeetCodeStats(): Promise<LeetCodeStats | null> {
-  const username = LEETCODE_USERNAME
-
+  const username = process.env.LEETCODE_USERNAME || 'sample-user'
+  console.log('username', username)
   if (!username || username === 'sample-user') {
     console.warn(
       'LeetCode username is not configured. Please set LEETCODE_USERNAME in your environment variables.',

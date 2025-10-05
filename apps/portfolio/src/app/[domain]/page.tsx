@@ -13,8 +13,13 @@ export default async function DomainPortfolioPage({
 }: PortfolioPageProps) {
   const { domain } = await params
 
-  // TODO: Uncomment when deploying with real domains
-  // Resolve the domain to get user data
+  // Handle localhost for development
+  if (domain === 'localhost:3001' || domain === 'localhost') {
+    const RootPage = (await import('../page')).default
+    return <RootPage />
+  }
+
+  // For production subdomains (portfolio.username.com)
   // const resolution = await domainService.resolveDomain(domain)
 
   // if (!resolution || resolution.appType !== 'portfolio') {
@@ -22,38 +27,40 @@ export default async function DomainPortfolioPage({
   // }
 
   // return <PortfolioPage user={resolution.user} domain={domain} />
-
-  // For local development - redirect to /dev route
-  notFound()
 }
 
 export async function generateMetadata({ params }: PortfolioPageProps) {
   const { domain } = await params
 
-  // TODO: Uncomment when deploying with real domains
-  // const resolution = await domainService.resolveDomain(domain)
+  // Handle localhost for development
+  if (domain === 'localhost:3001' || domain === 'localhost') {
+    return {
+      title: 'Portfolio Development - Localhost',
+      description: 'Development portfolio page',
+    }
+  }
 
-  // if (!resolution || resolution.appType !== 'portfolio') {
-  //   return {
-  //     title: 'Portfolio Not Found',
-  //   }
-  // }
+  // For production subdomains
+  const resolution = await domainService.resolveDomain(domain)
 
-  // return {
-  //   title: `${resolution.user.fullName} - Portfolio`,
-  //   description:
-  //     resolution.user.bio || `${resolution.user.fullName}'s portfolio`,
-  //   openGraph: {
-  //     title: `${resolution.user.fullName} - Portfolio`,
-  //     description:
-  //       resolution.user.bio || `${resolution.user.fullName}'s portfolio`,
-  //     images: resolution.user.profilePictureUrl
-  //       ? [resolution.user.profilePictureUrl]
-  //       : [],
-  //   },
-  // }
+  if (!resolution || resolution.appType !== 'portfolio') {
+    return {
+      title: 'Portfolio Not Found',
+      description: 'The requested portfolio could not be found',
+    }
+  }
 
   return {
-    title: 'Portfolio Not Found - Use /dev for development',
+    title: `${resolution.user.fullName} - Portfolio`,
+    description:
+      resolution.user.bio || `${resolution.user.fullName}'s portfolio`,
+    openGraph: {
+      title: `${resolution.user.fullName} - Portfolio`,
+      description:
+        resolution.user.bio || `${resolution.user.fullName}'s portfolio`,
+      images: resolution.user.profilePictureUrl
+        ? [resolution.user.profilePictureUrl]
+        : [],
+    },
   }
 }

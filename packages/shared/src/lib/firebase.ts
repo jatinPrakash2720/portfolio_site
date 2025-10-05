@@ -1,51 +1,62 @@
-import { initializeApp, getApps, getApp } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore'
-import { getAuth } from 'firebase/auth'
+/**
+ * This module initializes and exports the Firebase app instance and its associated services.
+ * It follows a singleton pattern to ensure that Firebase is only initialized once, which is
+ * crucial in a Next.js environment with hot-reloading.
+ *
+ * Configuration is loaded robustly from environment variables, supporting either a single
+ * JSON string or individual keys for flexibility.
+ */
 
-// Try to get config from NEXT_PUBLIC_FIREBASE_CONFIG first, fallback to individual env vars
-let firebaseConfig: any
+import { initializeApp, getApps, getApp, FirebaseOptions } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
 
-if (process.env.NEXT_PUBLIC_FIREBASE_CONFIG) {
+/**
+ * Loads the Firebase configuration from environment variables.
+ * Returns null if configuration is incomplete or missing.
+ * @returns {FirebaseOptions | null} The validated Firebase configuration object or null.
+ */
+function getFirebaseConfig(): FirebaseOptions | null {
+  const firebaseConfig: FirebaseOptions = {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  };
+
+  // Check if all required fields are present
+  const requiredFields = ['apiKey', 'authDomain', 'projectId', 'appId'];
+  const missingFields = requiredFields.filter(field => !firebaseConfig[field as keyof FirebaseOptions]);
+  
+  if (missingFields.length > 0) {
+    console.warn(`Firebase configuration incomplete. Missing: ${missingFields.join(', ')}`);
+    return null;
+  }
+
+  return firebaseConfig;
+}
+
+const firebaseConfig = getFirebaseConfig();
+
+// Initialize Firebase App only if configuration is available
+let app: any = null;
+let db: any = null;
+let auth: any = null;
+let storage: any = null;
+
+if (firebaseConfig) {
   try {
-    firebaseConfig = JSON.parse(process.env.NEXT_PUBLIC_FIREBASE_CONFIG)
+    app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+    db = getFirestore(app);
+    auth = getAuth(app);
+    storage = getStorage(app);
   } catch (error) {
-    console.warn(
-      'Failed to parse NEXT_PUBLIC_FIREBASE_CONFIG, falling back to individual env vars',
-    )
+    console.error('Failed to initialize Firebase:', error);
   }
 }
 
-// Fallback to individual environment variables
-if (!firebaseConfig || !firebaseConfig.projectId) {
-  firebaseConfig = {
-    apiKey: process.env.API_KEY,
-    authDomain: process.env.AUTH_DOMAIN,
-    projectId: process.env.PROJECT_ID,
-    storageBucket: process.env.STORAGE_BUCKET,
-    messagingSenderId: process.env.MESSAGING_SENDER_ID,
-    appId: process.env.APP_ID, // You may need to add this to your env vars
-  }
-}
-
-// Validate required fields
-if (!firebaseConfig.projectId) {
-  console.error(
-    'Firebase configuration is missing. Please check your environment variables.',
-  )
-  // Create a mock config to prevent crashes
-  firebaseConfig = {
-    apiKey: 'demo-api-key',
-    authDomain: 'demo-project.firebaseapp.com',
-    projectId: 'demo-project',
-    storageBucket: 'demo-project.appspot.com',
-    messagingSenderId: '123456789',
-    appId: 'demo-app-id',
-  }
-}
-
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp()
-
-const db = getFirestore(app)
-const auth = getAuth(app)
-
-export { app, db, auth }
+// Export the instances to be used throughout the application
+export { app, db, auth, storage };

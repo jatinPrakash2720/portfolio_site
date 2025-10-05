@@ -46,8 +46,8 @@ export interface GitHubStats {
 // --- Centralized API Fetcher with Caching ---
 
 const GITHUB_API_URL = 'https://api.github.com'
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN
-const GITHUB_USERNAME = process.env.GITHUB_USERNAME
+const GITHUB_TOKEN = process.env.G_TOKEN
+const GITHUB_USERNAME = process.env.G_USERNAME
 
 /**
  * A centralized fetch function for the GitHub API.

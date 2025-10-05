@@ -28,7 +28,7 @@ export function useLeetCodeStats() {
         setLoading(true)
         setError(null)
 
-        const response = await fetch('/api/leetcode')
+        const response = await fetch('/leetcode')
 
         if (!response.ok) {
           throw new Error(`Failed to fetch LeetCode stats: ${response.status}`)

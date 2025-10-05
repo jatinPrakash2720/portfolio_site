@@ -4,6 +4,11 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --primary: #8b5cf6;
+  --primary-foreground: #ffffff;
+  --border: #e5e7eb;
 }
 
 @theme inline {
@@ -19,7 +24,32 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --card: #1a1a1a;
+    --card-foreground: #ededed;
+    --primary: #8b5cf6;
+    --primary-foreground: #ffffff;
+    --border: #2a2a2a;
   }
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --card: #1a1a1a;
+  --card-foreground: #ededed;
+  --primary: #8b5cf6;
+  --primary-foreground: #ffffff;
+  --border: #2a2a2a;
+}
+
+.light {
+  --background: #ffffff;
+  --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --primary: #8b5cf6;
+  --primary-foreground: #ffffff;
+  --border: #e5e7eb;
 }
 
 html,
@@ -158,6 +188,40 @@ textarea {
   font-family: 'Poppins', sans-serif !important;
 }
 
+/* Custom animations for menu button */
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    transform: translateX(-20%) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateX(20%) scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(-20%) scale(1);
+    opacity: 0.6;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+.animate-gradient-shift {
+  animation: gradient-shift 4s ease-in-out infinite;
+}
+
 /* Poppins weight variants */
 .font-poppins-thin {
   font-family: 'Poppins', sans-serif !important;
@@ -250,6 +314,26 @@ textarea {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Safari and Chrome */
+}
+
+/* Force hide scrollbars on iframes */
+iframe {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+iframe::-webkit-scrollbar {
+  display: none;
+}
+
+/* Additional iframe scrollbar hiding */
+.web-preview-iframe {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.web-preview-iframe::-webkit-scrollbar {
+  display: none;
 }
 
 /* 3D Background Animations */

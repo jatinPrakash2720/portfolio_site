@@ -25,7 +25,7 @@ export function useLinkedInStats() {
         setLoading(true)
         setError(null)
         
-        const response = await fetch('/api/linkedin')
+        const response = await fetch('/linkedin')
         
         if (!response.ok) {
           throw new Error(`Failed to fetch LinkedIn stats: ${response.status}`)

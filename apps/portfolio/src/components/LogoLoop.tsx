@@ -196,6 +196,8 @@ export const LogoLoop = memo<LogoLoopProps>(
     const [seqWidth, setSeqWidth] = useState(0)
     const [copyCount, setCopyCount] = useState(ANIMATION_CONFIG.MIN_COPIES)
     const [isHovered, setIsHovered] = useState(false)
+    const [isLoaded, setIsLoaded] = useState(false)
+    const [isClient, setIsClient] = useState(false)
 
     const targetVelocity = useMemo(() => {
       const magnitude = Math.abs(speed)
@@ -214,6 +216,7 @@ export const LogoLoop = memo<LogoLoopProps>(
           Math.ceil(containerWidth / sequenceWidth) +
           ANIMATION_CONFIG.COPY_HEADROOM
         setCopyCount(Math.max(ANIMATION_CONFIG.MIN_COPIES, copiesNeeded))
+        setIsLoaded(true)
       }
     }, [])
 
@@ -223,7 +226,19 @@ export const LogoLoop = memo<LogoLoopProps>(
       [logos, gap, logoHeight],
     )
 
-    useImageLoader(seqRef, updateDimensions, [logos, gap, logoHeight])
+    // Set client-side flag
+    useEffect(() => {
+      setIsClient(true)
+    }, [])
+
+    // Simplified loading for React components
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setIsLoaded(true)
+        updateDimensions()
+      }, 200) // Give it time to render
+      return () => clearTimeout(timer)
+    }, [updateDimensions])
 
     useAnimationLoop(
       trackRef,
@@ -340,6 +355,34 @@ export const LogoLoop = memo<LogoLoopProps>(
       [width, cssVariables, style],
     )
 
+    // Flickering loading animation with static delays to prevent hydration issues
+    const FlickeringLoader = () => {
+      const staticDelays = [
+        '0s',
+        '0.15s',
+        '0.3s',
+        '0.45s',
+        '0.6s',
+        '0.75s',
+        '0.9s',
+        '1.05s',
+      ]
+
+      return (
+        <div className="flex items-center gap-3">
+          {Array.from({ length: 8 }, (_, i) => (
+            <div
+              key={i}
+              className="w-8 h-8 bg-gradient-to-r from-purple-500/30 to-purple-600/30 rounded-lg logoloop__flicker"
+              style={{
+                animationDelay: staticDelays[i],
+              }}
+            />
+          ))}
+        </div>
+      )
+    }
+
     return (
       <div
         ref={containerRef}
@@ -350,9 +393,15 @@ export const LogoLoop = memo<LogoLoopProps>(
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <div className="logoloop__track" ref={trackRef}>
-          {logoLists}
-        </div>
+        {!isLoaded || !isClient ? (
+          <div className="flex items-center justify-center h-full">
+            <FlickeringLoader />
+          </div>
+        ) : (
+          <div className="logoloop__track" ref={trackRef}>
+            {logoLists}
+          </div>
+        )}
       </div>
     )
   },
